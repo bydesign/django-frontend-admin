@@ -54,12 +54,12 @@ Copyright information and other random <b>{{ footer code}}</b>.
 var TEMPLATES = [
   {
     name: 'baseTemplate',
-    content: "<!doctype html><html><head><title>Replaced Django Frontend Admin</title></head><body><h1>Title goes here.</h1>{% block 'header' %}{% endblock %}<p></p>{% block 'footer' %}{% endblock %}</body></html>",
-    start: true
+    content: "<!doctype html><html><head><title>Replaced Django Frontend Admin</title></head><body><h1>Title goes here.</h1>{% block 'header' %}{% endblock %}<p></p>{% block 'footer' %}{% endblock %}</body></html>"
   },
   {
     name: 'childTemplate',
-    content: $(childTemplate).html()
+    content: $(childTemplate).html(),
+    start: true
   },
   {
     name: 'includeTemplate',
@@ -71,6 +71,14 @@ var TEMPLATES = [
 <script src="js/parser.js"></script>
 <script src="js/template.js"></script>
 <script src="js/default.js"></script>
+<script>
+var FA = new FrontAdmin();
+FA.init();
+
+$('#replace').click(function() {
+  FA.render();
+})
+</script>
 
 </body>
 </html>
