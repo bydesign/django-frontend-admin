@@ -1,9 +1,19 @@
 console.log('getting started');
 
-TEMPLATES.forEach(function(template) {
-  console.log(template);
-  console.log(template.name);
+var templateList = [];
+var mainTemplate;
 
-  var parser = new TemplateParser(template.content);
-  parser.parse();
+TEMPLATES.forEach(function(tempData) {
+  templateList.push(template);
+  var template = new Template(tempData.name, tempData.content, '');
+  if (tempData.start) {
+    mainTemplate = template;
+  }
 });
+
+$('#replace').click(function() {
+  var html = mainTemplate.render();
+  html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
+  $("body > *").not("#frontendEditor,#djDebug").remove()
+  $('body').prepend(html);
+})

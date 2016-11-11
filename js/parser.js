@@ -1,6 +1,7 @@
 class TemplateParser {
   constructor(code) {
     this.code = code;
+    this.tags = new Tags();
   }
 
   parse() {
@@ -72,6 +73,8 @@ class TemplateParser {
       }
       prevChar = char;
     }
+
+    return newCode;
   }
 
   renderTag(tag) {

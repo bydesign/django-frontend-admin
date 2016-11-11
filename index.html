@@ -2,21 +2,24 @@
 <html>
 <head>
 
-<title>Djang Frontend Admin</title>
+<title>Django Frontend Admin</title>
 
-<style></style>
+<style>
+.FE {
+  position:fixed;
+  top:0;
+  right:0;
+  background-color:#ccc;
+  color:#fff;
+  padding:.6em .3em;
+  font-size:.8em;
+}
+</style>
 
 </head>
 <body>
 
-<template id="baseTemplate">
-
-<h1>Title goes here.</h1>
-{% block 'header' %}{% endblock %}
-<p></p>
-{% block 'footer' %}{% endblock %}
-
-</template>
+<button id="replace">Go!</button>
 
 <template id="childTemplate">
 
@@ -43,13 +46,16 @@ Copyright information and other random <b>{{ footer code}}</b>.
 
 </template>
 
+<div id="frontendEditor" class="FE">frontend editor test</div>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
 var TEMPLATES = [
   {
     name: 'baseTemplate',
-    content: $(baseTemplate).html()
+    content: "<!doctype html><html><head><title>Replaced Django Frontend Admin</title></head><body><h1>Title goes here.</h1>{% block 'header' %}{% endblock %}<p></p>{% block 'footer' %}{% endblock %}</body></html>",
+    start: true
   },
   {
     name: 'childTemplate',
@@ -61,7 +67,9 @@ var TEMPLATES = [
   },
 ]
 </script>
+<script src="js/tags.js"></script>
 <script src="js/parser.js"></script>
+<script src="js/template.js"></script>
 <script src="js/default.js"></script>
 
 </body>
