@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+
+<title>Djang Frontend Admin</title>
+
+<style></style>
+
+</head>
+<body>
+
+<template id="baseTemplate">
+
+<h1>Title goes here.</h1>
+{% block 'header' %}{% endblock %}
+<p></p>
+{% block 'footer' %}{% endblock %}
+
+</template>
+
+<template id="childTemplate">
+
+{% extends "baseTemplate" %}
+
+{% block 'header' %}
+<nav>
+  <a href="#">Nav item</a>
+  <a href="#">Nav item</a>
+  <a href="#">Nav item</a>
+  <a href="#">Nav item</a>
+</nav>
+{% endblock %}
+
+{% block 'footer' %}
+Copyright information and other random <b>{{ footer code}}</b>.
+{% endblock %}
+
+</template>
+
+<template id="includeTemplate">
+
+<p>This paragraph has {{ not }} been included via the include template tag.</p>
+
+</template>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+var TEMPLATES = [
+  {
+    name: 'baseTemplate',
+    content: $(baseTemplate).html()
+  },
+  {
+    name: 'childTemplate',
+    content: $(childTemplate).html()
+  },
+  {
+    name: 'includeTemplate',
+    content: $(includeTemplate).html()
+  },
+]
+</script>
+<script src="js/parser.js"></script>
+<script src="js/default.js"></script>
+
+</body>
+</html>
