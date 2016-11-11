@@ -4,6 +4,13 @@ class TemplateParser {
     this.tags = new Tags();
   }
 
+  getTemplate(name) {
+    name = name.replace(/\"/g, '');
+    var template = FA.templates[name];
+
+    return template;
+  }
+
   parse() {
     var NORM = 0,
         TAG = 1,
@@ -46,6 +53,10 @@ class TemplateParser {
           STATE = NORM;
           curPart = '';
           newCode += this.renderTag(curTag);
+          if (curTag.name == 'extends') {
+            var parent = this.getTemplate(curTag.vars[0]);
+            console.log(parent);
+          }
           curTag = { vars: [] };
 
         } else if (char == ' ') {
@@ -67,7 +78,6 @@ class TemplateParser {
         curPart += char;
         if (char == '}' && prevChar == '}') {
           STATE = NORM;
-          console.log(curTag);
           curPart = '';
         }
       }

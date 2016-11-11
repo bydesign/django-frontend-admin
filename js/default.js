@@ -2,13 +2,13 @@ class FrontAdmin {
   init() {
     console.log('initializing Front Admin');
 
-    this.templateList = [];
+    this.templates = {};
     this.mainTemplate;
     var that = this;
 
     TEMPLATES.forEach(function(tempData) {
-      that.templateList.push(template);
       var template = new Template(tempData.name, tempData.content, '');
+      that.templates[tempData.name] = template;
       if (tempData.start) {
         that.mainTemplate = template;
       }
