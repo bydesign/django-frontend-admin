@@ -15,6 +15,7 @@ class FrontAdmin {
       that.templates[tempData.name] = tempData;
       if (tempData.start) {
         that.processor = new Processor(tempData, that);
+        that.template = tempData;
       }
     });
     this.processor.parse();
