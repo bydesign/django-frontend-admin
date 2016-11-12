@@ -10,8 +10,8 @@ class Processor {
   parse() {
     var parser = new TemplateParser(this.templateContent, this.fa.tags);
     this.tree = parser.parse();
-    this.blocks = parser.getBlocks();
-    if (this.blocks != undefined) {
+    this.blocksList = parser.getBlocks();
+    if (this.blocksList.length > 0) {
       this.inherit = true;
     }
   }
@@ -19,12 +19,26 @@ class Processor {
   render(context) {
     var str = '';
     var that = this;
+    var blocks = {};
+
+    // build block tree for inheritance
+    if (this.inherit) {
+      this.blocksList.forEach(function(block) {
+        block.resolveVars(context);
+        if (blocks[block.blockName] == undefined) {
+          blocks[block.blockName] = [];
+        }
+        blocks[block.blockName].push(block);
+      });
+    }
+
     this.tree.forEach(function(node) {
       // override blocks that are inherited
+      node.resolveVars(context);
       if (that.inherit && node.name == 'block') {
-        node = that.blocks[node.blockName][0];
+        node = blocks[node.blockName][0];
       }
-      str += node.render(context);
+      str += node.render();
     });
 
     return str;

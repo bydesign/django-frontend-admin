@@ -1,7 +1,7 @@
 class TemplateParser {
   constructor(code, tags) {
     this.code = code;
-    this.blocks = {};
+    this.blocks = [];
     this.tags = tags;
     this.root = [];
     this.extends = false;
@@ -19,9 +19,7 @@ class TemplateParser {
   }
 
   getBlocks() {
-    if (this.extends) {
-      return this.blocks;
-    }
+    return this.blocks;
   }
 
   parse() {
@@ -105,11 +103,12 @@ class TemplateParser {
             // if template extends another template,
             // then save block tags for later
             if (this.extends) {
-              var blockName = curParent.blockName;
+              this.blocks.push(curParent);
+              /*var blockName = curParent.blockName;
               if (this.blocks[blockName] == undefined) {
                 this.blocks[blockName] = [];
               }
-              this.blocks[blockName].push(curParent);
+              this.blocks[blockName].push(curParent);*/
             }
             curParent = curParent.parent;
             if (curParent != undefined && curParent.needsClosing) {

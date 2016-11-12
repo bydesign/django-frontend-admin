@@ -9,8 +9,29 @@ class Node {
     return '';
   }
 
-  resolveVar(variable) {
-    return variable.replace(/[\'|\"]/g, '');
+  resolveValue(value, context) {
+    if (value.match(/^[\'|\"].+[\'|\"]$/) != null) {
+      value = value.replace(/[\'|\"]/g, '');
+    } else {
+      value = context[value];
+    }
+    return value;
+  }
+
+  resolveVars(context) {
+    if (this.vars != undefined && this.varsFinal == undefined) {
+      var varsFinal = [];
+      var that = this;
+      this.vars.forEach(function(variable) {
+        variable = that.resolveValue(variable, context);
+        varsFinal.push(variable);
+      });
+      this.varsFinal = varsFinal;
+
+      this.children.forEach(function(child) {
+        child.resolveVars(context);
+      });
+    }
   }
 }
 
@@ -19,7 +40,12 @@ class Variable extends Node {
     super(parent, start, end);
     this.value = value;
   }
-  render(context) {
+
+  resolveVars(context) {
+    this.value = this.resolveValue(this.value, context);
+  }
+
+  render() {
     return this.value;
   }
 }
@@ -73,7 +99,11 @@ class ExtendsTag extends Tag {
 class BlockTag extends TagClosing {
   constructor(parent, start, end, vars) {
     super('block', parent, start, end, vars, 'endblock');
-    this.blockName = this.resolveVar(vars[0]);
+  }
+
+  resolveVars(context) {
+    super.resolveVars(context);
+    this.blockName = this.varsFinal[0];
   }
 }
 
