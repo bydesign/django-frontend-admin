@@ -32,9 +32,10 @@ class TemplateParser {
         partStart = 0,
         curTagName = '',
         curTagVars = [],
+        curCloseTag = '',
         curParent,
         curTag,
-        curTagList = this.root,
+        //curTagList = this.root,
         context = this.context;
     for (var i=0, len=code.length; i<len; i++) {
       var char = code[i];
@@ -47,21 +48,39 @@ class TemplateParser {
         // template tag
         if (char == '{' && nextChar == '%') {
           STATE = TAG;
-          if (!EXTENDS) {
-            curTag = new Text(undefined, curPart, partStart, i);
-            curTagList.push(curTag);
+          curTag = new Text(undefined, curPart, partStart, i);
+          if (curParent != undefined) {
+            curParent.addChild(curTag);
+          } else {
+            this.root.push(curTag);
           }
           partStart = i;
-          curPart = char;
+          curPart = '';
 
         // template variable
         } else if (char == '{' && nextChar == '{') {
           STATE = VAR;
-          curPart += char;
+          curTag = new Text(curParent, curPart, partStart, i);
+          if (curParent != undefined) {
+            curParent.addChild(curTag);
+          } else {
+            this.root.push(curTag);
+          }
+          partStart = i;
+          curPart = '';
 
         // standard text
         } else {
           curPart += char;
+
+          if (i == len-1) {
+            curTag = new Text(curParent, curPart, partStart, i);
+            if (curParent != undefined) {
+              curParent.addChild(curTag);
+            } else {
+              this.root.push(curTag);
+            }
+          }
         }
 
       // parse tag parts, construct tag, and return tag value
@@ -70,23 +89,43 @@ class TemplateParser {
           curPart = '';
         } else if (char == '}' && prevChar == '%') {
           partStart = i;
-          var TagClass = this.getTagClass(curTagName);
-          if (TagClass == undefined) {
-            console.log('TAG NAME NOT FOUND: ' + curTagName);
-          } else {
-            curTag = new TagClass(curParent, partStart, i, context, curTagVars);
-            curTagList.push(curTag);
+
+          // close already opened tag
+          if (curCloseTag.length > 0 && curTagName == curCloseTag) {
+            curParent.end = i;
+            curParent = curParent.parent;
+            if (curParent != undefined && curParent.needsClosing) {
+              curCloseTag = curParent.end;
+            } else {
+              curCloseTag = '';
+            }
             curPart = '',
             curTagName = '',
             curTagVars = [];
             STATE = NORM;
-          }
 
-          /*if (curTag.name == 'extends') {
-            var parent = this.getTemplate(curTag.vars[0]);
-            console.log(parent);
+          // add new tag
+          } else {
+            var TagClass = this.getTagClass(curTagName);
+            if (TagClass == undefined) {
+              console.log('TAG NAME NOT FOUND: ' + curTagName);
+            } else {
+              curTag = new TagClass(curParent, partStart, i, context, curTagVars);
+              if (curParent == undefined) {
+                this.root.push(curTag);
+              } else {
+                curParent.addChild(curTag);
+              }
+              if (curTag.needsClosing) {
+                curParent = curTag;
+                curCloseTag = curTag.end;
+              }
+              curPart = '',
+              curTagName = '',
+              curTagVars = [];
+              STATE = NORM;
+            }
           }
-          curTag = { vars: [] };*/
 
         } else if (char == ' ') {
           if (curPart.length > 0) {
@@ -105,14 +144,24 @@ class TemplateParser {
       // parse variable insertion and return value
       } else if (STATE == VAR) {
         curPart += char;
-        if (char == '}' && prevChar == '}') {
-          STATE = NORM;
+        if (char == '{' && prevChar == '{') {
           curPart = '';
+
+        } else if (char == '}' && prevChar == '}') {
+          curTag = new Variable(curParent, partStart, i, context, curPart.replace('}}','').trim());
+          if (curParent != undefined) {
+            curParent.addChild(curTag);
+          } else {
+            this.root.push(curTag);
+          }
+          partStart = i;
+          curPart = '';
+          STATE = NORM;
         }
       }
       prevChar = char;
     }
-
+    console.log(this.root);
     return this.root;
   }
 }

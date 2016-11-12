@@ -10,6 +10,16 @@ class Node {
   }
 }
 
+class Variable extends Node {
+  constructor(parent, start, end, context, value) {
+    super(parent, start, end);
+    this.value = value;
+  }
+  render() {
+    return this.value;
+  }
+}
+
 class Text extends Node {
   constructor(parent, text, start, end) {
     super(parent, start, end);
