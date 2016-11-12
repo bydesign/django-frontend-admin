@@ -22,23 +22,20 @@ class Text extends Node {
 }
 
 class Tag extends Node {
-  constructor(tagName, parent, start, end) {
+  constructor(tagName, parent, start, end, context, vars) {
     super(parent, start, end);
     this.name = tagName;
+    this.context = context;
+    this.vars = vars;
   }
 }
 
 class TagClosing extends Tag {
-  constructor(tagName, parent, start, end, endTagName, context, extraContext) {
-    super(tagName, parent, start, end);
+  constructor(tagName, parent, start, end, context, vars, endTagName) {
+    super(tagName, parent, start, end, context, vars);
     this.end = endTagName;
     this.children = [];
-
-    if (extraContext == undefined) {
-      this.context = context;
-    } else {
-      this.context = Object.assign({}, context, extraContext);
-    }
+    this.needsClosing = true;
   }
 
   addChild(child) {
@@ -55,34 +52,56 @@ class TagClosing extends Tag {
 }
 
 class ExtendsTag extends Tag {
-  constructor(parent, start, end, template) {
-    super('extends', parent, start, end);
-    this.template = template;
+  constructor(parent, start, end, context, vars) {
+    super('extends', parent, start, end, context, vars);
   }
 }
 
 class BlockTag extends TagClosing {
-  constructor(parent, start, end, context, extraContext) {
-    super('block', parent, start, end, 'endblock', context, extraContext);
+  constructor(parent, start, end, context, vars) {
+    super('block', parent, start, end, context, vars, 'endblock');
   }
 }
 
 class WithTag extends TagClosing {
-  constructor(parent, start, end, context, extraContext) {
-    super('with', parent, start, end, 'endwith', context, extraContext);
+  constructor(parent, start, end, context, vars) {
+    super('with', parent, start, end, context, vars, 'endwith');
   }
 }
 
 class IfTag extends TagClosing {
   constructor(parent, start, end, context, vars) {
-    super('if', parent, start, end, 'endif', context);
+    super('if', parent, start, end, context, vars, 'endif');
     this.extraTags = ['elif', 'else'];
   }
 }
 
 class ForTag extends TagClosing {
-  constructor(parent, start, end, context, loopVarName, loopOverList) {
-    super('if', parent, start, end, 'endif', context);
+  constructor(parent, start, end, context, vars) {
+    super('if', parent, start, end, context, vars, 'endif');
     this.extraTags = ['empty'];
   }
 }
+
+var BUILTIN_TAGS = [
+  {
+    name: 'extends',
+    class: ExtendsTag
+  },
+  {
+    name: 'block',
+    class: BlockTag
+  },
+  {
+    name: 'with',
+    class: WithTag
+  },
+  {
+    name: 'if',
+    class: IfTag
+  },
+  {
+    name: 'for',
+    class: ForTag
+  },
+];

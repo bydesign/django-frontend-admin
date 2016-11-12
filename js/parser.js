@@ -1,7 +1,14 @@
 class TemplateParser {
-  constructor(code) {
+  constructor(code, tags) {
     this.code = code;
-    this.tags = new Tags();
+    this.blocks = {};
+    this.tags = tags;
+    this.root = [];
+    this.context = {};
+  }
+
+  getTagClass(name) {
+    return this.tags[name];
   }
 
   getTemplate(name) {
@@ -15,13 +22,20 @@ class TemplateParser {
     var NORM = 0,
         TAG = 1,
         VAR = 2,
-        STATE = NORM;
+        STATE = NORM,
+        EXTENDS = this.code.includes('{% extends ');
     var code = this.code,
         newCode = '',
         prevChar = '',
         nextChar = '',
         curPart = '',
-        curTag = { vars: [] };
+        partStart = 0,
+        curTagName = '',
+        curTagVars = [],
+        curParent,
+        curTag,
+        curTagList = this.root,
+        context = this.context;
     for (var i=0, len=code.length; i<len; i++) {
       var char = code[i];
       if (i+1 < len) {
@@ -33,7 +47,12 @@ class TemplateParser {
         // template tag
         if (char == '{' && nextChar == '%') {
           STATE = TAG;
-          curPart += char;
+          if (!EXTENDS) {
+            curTag = new Text(undefined, curPart, partStart, i);
+            curTagList.push(curTag);
+          }
+          partStart = i;
+          curPart = char;
 
         // template variable
         } else if (char == '{' && nextChar == '{') {
@@ -42,7 +61,7 @@ class TemplateParser {
 
         // standard text
         } else {
-          newCode += char;
+          curPart += char;
         }
 
       // parse tag parts, construct tag, and return tag value
@@ -50,21 +69,31 @@ class TemplateParser {
         if (char == '%' && prevChar == '{') {
           curPart = '';
         } else if (char == '}' && prevChar == '%') {
-          STATE = NORM;
-          curPart = '';
-          newCode += this.renderTag(curTag);
-          if (curTag.name == 'extends') {
+          partStart = i;
+          var TagClass = this.getTagClass(curTagName);
+          if (TagClass == undefined) {
+            console.log('TAG NAME NOT FOUND: ' + curTagName);
+          } else {
+            curTag = new TagClass(curParent, partStart, i, context, curTagVars);
+            curTagList.push(curTag);
+            curPart = '',
+            curTagName = '',
+            curTagVars = [];
+            STATE = NORM;
+          }
+
+          /*if (curTag.name == 'extends') {
             var parent = this.getTemplate(curTag.vars[0]);
             console.log(parent);
           }
-          curTag = { vars: [] };
+          curTag = { vars: [] };*/
 
         } else if (char == ' ') {
           if (curPart.length > 0) {
-            if (curTag.name == undefined) {
-              curTag.name = curPart;
+            if (curTagName.length == 0) {
+              curTagName = curPart;
             } else {
-              curTag.vars.push(curPart);
+              curTagVars.push(curPart);
             }
             curPart = '';
           }
@@ -84,11 +113,6 @@ class TemplateParser {
       prevChar = char;
     }
 
-    return newCode;
-  }
-
-  renderTag(tag) {
-    console.log(tag);
-    return '[tag goes here]';
+    return this.root;
   }
 }

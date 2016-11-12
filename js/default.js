@@ -1,24 +1,36 @@
 class FrontAdmin {
-  init() {
+  constructor() {
     console.log('initializing Front Admin');
 
     this.templates = {};
-    this.mainTemplate;
+    this.tags = {};
+    this.processor;
+
+  }
+
+  process(templates) {
     var that = this;
 
-    TEMPLATES.forEach(function(tempData) {
-      var template = new Template(tempData.name, tempData.content, '');
-      that.templates[tempData.name] = template;
+    templates.forEach(function(tempData) {
+      that.templates[tempData.name] = tempData;
       if (tempData.start) {
-        that.mainTemplate = template;
+        that.processor = new Processor(tempData, that);
       }
     });
+    this.processor.parse();
   }
 
   render() {
-    var html = this.mainTemplate.render();
+    var html = this.processor.render();
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
     $("body > *").not("#frontendEditor,#djDebug").remove()
     $('body').prepend(html);
+  }
+
+  registerTags(tags) {
+    var that = this;
+    tags.forEach(function(tag) {
+      that.tags[tag.name] = tag.class;
+    });
   }
 }

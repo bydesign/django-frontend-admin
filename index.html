@@ -68,15 +68,16 @@ var TEMPLATES = [
   },
 ]
 </script>
-<script src="js/tags.js"></script>
+<script src="js/builtin_tags.js"></script>
 <script src="js/parser.js"></script>
-<script src="js/template.js"></script>
+<script src="js/processor.js"></script>
 <script src="js/default.js"></script>
 <script>
 var FA = new FrontAdmin();
-FA.init();
+FA.registerTags(BUILTIN_TAGS);
 
 $('#replace').click(function() {
+  FA.process(TEMPLATES);
   FA.render();
 })
 </script>
