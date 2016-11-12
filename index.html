@@ -32,11 +32,11 @@
   <a href="#">Nav item</a>
   <a href="#">Nav item</a>
 </nav>
-{% block extraHeader %}{% endblock %}
+{% block extraHeader %}<p>extra header block</p>{% endblock %}
 {% endblock %}
 
 {% block 'footer' %}
-Copyright information and other random <b>{{ footerCode }}</b>.
+<div>Copyright information and other random <b>{{ footerCode }}</b>.</div>
 {% endblock %}
 
 {{ finalvariable }} final text</template>

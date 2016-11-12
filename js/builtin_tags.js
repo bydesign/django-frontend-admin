@@ -8,6 +8,10 @@ class Node {
   render(context) {
     return '';
   }
+
+  resolveVar(variable) {
+    return variable.replace(/[\'|\"]/g, '');
+  }
 }
 
 class Variable extends Node {
@@ -69,6 +73,7 @@ class ExtendsTag extends Tag {
 class BlockTag extends TagClosing {
   constructor(parent, start, end, vars) {
     super('block', parent, start, end, vars, 'endblock');
+    this.blockName = this.resolveVar(vars[0]);
   }
 }
 

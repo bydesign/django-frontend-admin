@@ -18,6 +18,12 @@ class TemplateParser {
     return template;
   }
 
+  getBlocks() {
+    if (this.extends) {
+      return this.blocks;
+    }
+  }
+
   parse() {
     if (this.code.includes('{% extends ')) {
       this.extends = true;
@@ -99,7 +105,7 @@ class TemplateParser {
             // if template extends another template,
             // then save block tags for later
             if (this.extends) {
-              var blockName = curParent.vars[0].replace(/[\'|\"]/g, '');
+              var blockName = curParent.blockName;
               if (this.blocks[blockName] == undefined) {
                 this.blocks[blockName] = [];
               }
@@ -194,8 +200,6 @@ class TemplateParser {
       this.parse();
     }
 
-    console.log(this.root);
-    console.log(this.blocks);
     return this.root;
   }
 }
