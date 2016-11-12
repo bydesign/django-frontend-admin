@@ -36,7 +36,7 @@
 {% endblock %}
 
 {% block 'footer' %}
-Copyright information and other random <b>{{ footer code }}</b>.
+Copyright information and other random <b>{{ footerCode }}</b>.
 {% endblock %}
 
 {{ finalvariable }} final text</template>
@@ -78,7 +78,11 @@ FA.registerTags(BUILTIN_TAGS);
 
 $('#replace').click(function() {
   FA.process(TEMPLATES);
-  FA.render();
+  FA.render({
+    not: 'definitely',
+    footerCode: 'footer code value',
+    finalvariable: 'my last words'
+  });
 })
 </script>
 

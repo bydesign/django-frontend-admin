@@ -20,8 +20,9 @@ class FrontAdmin {
     this.processor.parse();
   }
 
-  render() {
-    var html = this.processor.render();
+  render(context) {
+    var html = this.processor.render(context);
+    //console.log(html);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
     $("body > *").not("#frontendEditor,#djDebug").remove()
     $('body').prepend(html);

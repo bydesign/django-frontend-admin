@@ -11,10 +11,10 @@ class Processor {
     this.tree = parser.parse();
   }
 
-  render() {
+  render(context) {
     var str = '';
     this.tree.forEach(function(node) {
-      str += node.render();
+      str += node.render(context);
     });
 
     return str;

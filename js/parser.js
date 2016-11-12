@@ -4,7 +4,7 @@ class TemplateParser {
     this.blocks = {};
     this.tags = tags;
     this.root = [];
-    this.context = {};
+    this.extends = false;
   }
 
   getTagClass(name) {
@@ -19,11 +19,14 @@ class TemplateParser {
   }
 
   parse() {
+    if (this.code.includes('{% extends ')) {
+      this.extends = true;
+    }
     var NORM = 0,
         TAG = 1,
         VAR = 2,
         STATE = NORM,
-        EXTENDS = this.code.includes('{% extends ');
+        extendsTemplate;
     var code = this.code,
         newCode = '',
         prevChar = '',
@@ -34,9 +37,8 @@ class TemplateParser {
         curTagVars = [],
         curCloseTag = '',
         curParent,
-        curTag,
-        //curTagList = this.root,
-        context = this.context;
+        curTag;
+
     for (var i=0, len=code.length; i<len; i++) {
       var char = code[i];
       if (i+1 < len) {
@@ -93,6 +95,16 @@ class TemplateParser {
           // close already opened tag
           if (curCloseTag.length > 0 && curTagName == curCloseTag) {
             curParent.end = i;
+
+            // if template extends another template,
+            // then save block tags for later
+            if (this.extends) {
+              var blockName = curParent.vars[0].replace(/[\'|\"]/g, '');
+              if (this.blocks[blockName] == undefined) {
+                this.blocks[blockName] = [];
+              }
+              this.blocks[blockName].push(curParent);
+            }
             curParent = curParent.parent;
             if (curParent != undefined && curParent.needsClosing) {
               curCloseTag = curParent.end;
@@ -107,10 +119,22 @@ class TemplateParser {
           // add new tag
           } else {
             var TagClass = this.getTagClass(curTagName);
+
+            // tag name not found
             if (TagClass == undefined) {
               console.log('TAG NAME NOT FOUND: ' + curTagName);
+
+            // extends tag with custom inheritance functionality
+          } else if (curTagName == 'extends') {
+              extendsTemplate = curTagVars[0].replace(/[\'|\"]/g, '');
+              curPart = '',
+              curTagName = '',
+              curTagVars = [];
+              STATE = NORM;
+
+            // standard supported tag
             } else {
-              curTag = new TagClass(curParent, partStart, i, context, curTagVars);
+              curTag = new TagClass(curParent, partStart, i, curTagVars);
               if (curParent == undefined) {
                 this.root.push(curTag);
               } else {
@@ -148,7 +172,7 @@ class TemplateParser {
           curPart = '';
 
         } else if (char == '}' && prevChar == '}') {
-          curTag = new Variable(curParent, partStart, i, context, curPart.replace('}}','').trim());
+          curTag = new Variable(curParent, partStart, i, curPart.replace('}}','').trim());
           if (curParent != undefined) {
             curParent.addChild(curTag);
           } else {
@@ -161,7 +185,17 @@ class TemplateParser {
       }
       prevChar = char;
     }
+
+    if (this.extends && extendsTemplate != undefined) {
+      var template = this.getTemplate(extendsTemplate);
+      this.code = template.content;
+      extendsTemplate = '';
+      this.root = [];
+      this.parse();
+    }
+
     console.log(this.root);
+    console.log(this.blocks);
     return this.root;
   }
 }

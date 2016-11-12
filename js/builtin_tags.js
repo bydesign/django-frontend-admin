@@ -5,17 +5,17 @@ class Node {
     this.end = end;
   }
 
-  render() {
+  render(context) {
     return '';
   }
 }
 
 class Variable extends Node {
-  constructor(parent, start, end, context, value) {
+  constructor(parent, start, end, value) {
     super(parent, start, end);
     this.value = value;
   }
-  render() {
+  render(context) {
     return this.value;
   }
 }
@@ -32,17 +32,16 @@ class Text extends Node {
 }
 
 class Tag extends Node {
-  constructor(tagName, parent, start, end, context, vars) {
+  constructor(tagName, parent, start, end, vars) {
     super(parent, start, end);
     this.name = tagName;
-    this.context = context;
     this.vars = vars;
   }
 }
 
 class TagClosing extends Tag {
-  constructor(tagName, parent, start, end, context, vars, endTagName) {
-    super(tagName, parent, start, end, context, vars);
+  constructor(tagName, parent, start, end, vars, endTagName) {
+    super(tagName, parent, start, end, vars);
     this.end = endTagName;
     this.children = [];
     this.needsClosing = true;
@@ -52,7 +51,7 @@ class TagClosing extends Tag {
     this.children.push(child);
   }
 
-  render() {
+  render(context) {
     var str = '';
     this.children.forEach(function(child) {
       str += child.render();
@@ -62,33 +61,33 @@ class TagClosing extends Tag {
 }
 
 class ExtendsTag extends Tag {
-  constructor(parent, start, end, context, vars) {
-    super('extends', parent, start, end, context, vars);
+  constructor(parent, start, end, vars) {
+    super('extends', parent, start, end, vars);
   }
 }
 
 class BlockTag extends TagClosing {
-  constructor(parent, start, end, context, vars) {
-    super('block', parent, start, end, context, vars, 'endblock');
+  constructor(parent, start, end, vars) {
+    super('block', parent, start, end, vars, 'endblock');
   }
 }
 
 class WithTag extends TagClosing {
-  constructor(parent, start, end, context, vars) {
-    super('with', parent, start, end, context, vars, 'endwith');
+  constructor(parent, start, end, vars) {
+    super('with', parent, start, end, vars, 'endwith');
   }
 }
 
 class IfTag extends TagClosing {
-  constructor(parent, start, end, context, vars) {
-    super('if', parent, start, end, context, vars, 'endif');
+  constructor(parent, start, end, vars) {
+    super('if', parent, start, end, vars, 'endif');
     this.extraTags = ['elif', 'else'];
   }
 }
 
 class ForTag extends TagClosing {
-  constructor(parent, start, end, context, vars) {
-    super('if', parent, start, end, context, vars, 'endif');
+  constructor(parent, start, end, vars) {
+    super('if', parent, start, end, vars, 'endif');
     this.extraTags = ['empty'];
   }
 }
