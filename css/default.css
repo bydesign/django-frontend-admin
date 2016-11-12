@@ -1,0 +1,41 @@
+body {
+  font-family: 'Ubuntu', sans-serif;
+}
+.FEbtn {
+  position:fixed;
+  bottom:0;
+  right:0;
+  background-color:rgba(0,0,0,.5);
+  color:#fff;
+  padding:.5em .8em;
+  display:inline-block;
+  cursor:default;
+}
+.FEbtn:hover {
+  background-color:rgba(0,0,0,.8);
+}
+.FE {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:45%;
+  opacity:.8;
+}
+.FEtitle {
+  background-color:rgba(0,0,0,.8);
+  font-size:1em;
+  padding: .5em .8em;
+  color:#fff;
+  position:relative;
+}
+.FEutils {
+  position:absolute;
+  top:.3em;
+  right:.8em;
+}
+.FEtemplateSelect {
+  position:relative;
+  top: -.7em;
+  margin: .5em
+}

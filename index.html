@@ -4,24 +4,15 @@
   <meta charset="utf-8">
   <link href="js/codemirror/lib/codemirror.css" rel="stylesheet" />
   <link href="js/codemirror/theme/duotone-light.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+  <link href="css/default.css" rel="stylesheet">
   <title>Django Frontend Admin</title>
-
-<style>
-.FE {
-  position:fixed;
-  top:0;
-  right:0;
-  background-color:#ccc;
-  color:#fff;
-  padding:.6em .3em;
-  font-size:.8em;
-}
-</style>
-
 </head>
 <body>
 
-<button id="replace">Go!</button>
+<p>Nothing to see here</p>
 
 <template id="childTemplate">
 
@@ -48,8 +39,6 @@
 <p>This paragraph has {{ not }} been included via the include template tag.</p>
 
 </template>
-
-<div id="frontendEditor" class="FE">frontend editor test</div>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -78,22 +67,46 @@ var TEMPLATES = [
 <script src="js/processor.js"></script>
 <script src="js/default.js"></script>
 <script>
-var FA = new FrontAdmin();
-FA.registerTags(BUILTIN_TAGS);
-FA.process(TEMPLATES);
-FA.render({
+$('body').append('<div id="frontEditor" class="FEbtn">FE</div>');
+
+var context = {
   not: 'definitely (resolved)',
   footerCode: 'footer code value (resolved)',
   finalvariable: 'my last words (resolved)'
+};
+
+function render() {
+  rendering = true;
+  FA.process(TEMPLATES);
+  FA.render(context);
+  rendering = false;
+}
+
+var rendering = false;
+$('#frontEditor').click(function() {
+  window.FA = new FrontAdmin();
+  FA.registerTags(BUILTIN_TAGS);
+  render();
+
+  $('body').append('<div class="FE" id="FE"><div class="FEtitle">FrontEditor <span class="FEutils"><i class="material-icons">save</i><select id="templates" class="FEtemplateSelect"><option>Select template</option></select><i class="material-icons">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
+  var editor = CodeMirror.fromTextArea(myTextarea, {
+    lineNumbers: true,
+    theme: 'duotone-light',
+    mode: 'django'
+  });
+  var curTemplate = FA.template;
+  editor.setValue(curTemplate.content);
+  editor.on('changes', function(cm, change) {
+    if (rendering) {
+      console.log('waiting for render ...');
+    } else {
+      curTemplate.content = editor.getValue();
+      console.log(TEMPLATES);
+      render();
+    }
+  });
 });
 
-$('body').append('<textarea id="myTextarea"></textarea>');
-var editor = CodeMirror.fromTextArea(myTextarea, {
-  lineNumbers: true,
-  value: FA.template.content,
-  theme: 'duotone-light',
-  mode: 'django'
-});
 
 </script>
 
