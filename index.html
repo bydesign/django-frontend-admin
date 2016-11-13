@@ -84,11 +84,16 @@ function render() {
 
 var rendering = false;
 $('#frontEditor').click(function() {
+  $(this).hide();
   window.FA = new FrontAdmin();
   FA.registerTags(BUILTIN_TAGS);
   render();
 
-  $('body').append('<div class="FE" id="FE"><div class="FEtitle">FrontEditor <span class="FEutils"><i class="material-icons">save</i><select id="templates" class="FEtemplateSelect"><option>Select template</option></select><i class="material-icons">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
+  $('body').append('<div class="FE" id="FE"><div class="FEtitle">FrontEditor <span class="FEutils"><i class="material-icons">save</i><select id="templates" class="FEtemplateSelect"><option>Select template</option></select><i class="material-icons" id="closeFA">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
+  $('#closeFA').click(function() {
+    $('#FE').remove();
+    $('#frontEditor').show();
+  })
   var editor = CodeMirror.fromTextArea(myTextarea, {
     lineNumbers: true,
     theme: 'duotone-light',
@@ -105,13 +110,26 @@ $('#frontEditor').click(function() {
     }
   });
 
+  var activeClass = 'FAactive';
+  editor.on('cursorActivity', function(cm) {
+    var nodeId = FA.getNodeId(cm.getCursor());
+    activateNode($('[fa-tag-id='+nodeId+']'));
+  });
+
   $(document).click(function(event) {
-    var tagIdStr = $(event.target).attr('fa-tag-id');
+    var $target = $(event.target);
+    var tagIdStr = $target.attr('fa-tag-id');
     if (tagIdStr != undefined) {
       var tag = FA.getTag( Number(tagIdStr) );
       editor.setSelection(tag.start, tag.end);
+      activateNode($target);
     }
   })
+
+  function activateNode(node) {
+    $('.'+activeClass).removeClass(activeClass);
+    $(node).addClass(activeClass);
+  }
 });
 
 

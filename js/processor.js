@@ -20,6 +20,21 @@ class Processor {
     return this.tags[num-1];
   }
 
+  getNodeId(cursor) {
+    var id;
+    this.tags.forEach(function(tag) {
+      if (
+        tag.start.line <= cursor.line &&
+        tag.start.ch <= cursor.ch &&
+        tag.end.line >= cursor.line &&
+        tag.end.ch >= cursor.ch
+      ) {
+        id = tag.id
+      }
+    })
+    return id;
+  }
+
   render(context) {
     var str = '';
     var that = this;

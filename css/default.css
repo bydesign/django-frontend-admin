@@ -11,6 +11,9 @@ body {
   display:inline-block;
   cursor:default;
 }
+.FEutils {
+  cursor:default;
+}
 .FEbtn:hover {
   background-color:rgba(0,0,0,.8);
 }
@@ -38,4 +41,12 @@ body {
   position:relative;
   top: -.7em;
   margin: .5em
+}
+*:hover {
+  outline:rgba(0,0,0,.2);
+}
+.FAactive {
+  box-shadow: 0 0 30px rgba(0,0,0,.25);
+  border-radius:2px;
+  outline:solid 1px rgba(255,255,255,.5);
 }

@@ -25,6 +25,10 @@ class FrontAdmin {
     return this.processor.getTag(num);
   }
 
+  getNodeId(cursor) {
+    return this.processor.getNodeId(cursor);
+  }
+
   render(context) {
     var html = this.processor.render(context);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
