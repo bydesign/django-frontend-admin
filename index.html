@@ -105,6 +105,15 @@ $('#frontEditor').click(function() {
       render();
     }
   });
+
+  $(document).click(function(event) {
+    var tagIdStr = $(event.target).attr('fa-tag-id');
+    if (tagIdStr != undefined) {
+      var tag = FA.getTag(tagId);
+      console.log(tag);
+      //editor.setSelection({line, ch}, {line, ch});
+    }
+  })
 });
 
 

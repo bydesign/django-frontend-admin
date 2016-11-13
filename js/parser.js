@@ -4,6 +4,7 @@ class TemplateParser {
     this.blocks = [];
     this.tags = tags;
     this.root = [];
+    this.elements = [];
     this.extends = false;
   }
 
@@ -22,6 +23,10 @@ class TemplateParser {
     return this.blocks;
   }
 
+  getElements() {
+    return this.elements;
+  }
+
   parse() {
     if (this.code.includes('{% extends ')) {
       this.extends = true;
@@ -31,6 +36,10 @@ class TemplateParser {
         VAR = 2,
         STATE = NORM,
         extendsTemplate;
+    var TEXT = 0,
+        ATTR = 2,
+        TAGCLOSE = 3,
+        HTMLSTATE = TEXT;
     var code = this.code,
         newCode = '',
         prevChar = '',
@@ -41,7 +50,14 @@ class TemplateParser {
         curTagVars = [],
         curCloseTag = '',
         curParent,
-        curTag;
+        curTag,
+        htmlTags = [],
+        htmlRoot = [],
+        attrChar = '',
+        curHtmlTag,
+        parentHtmlTag,
+        curHtmlCode = '',
+        curTagNum = 1;
 
     for (var i=0, len=code.length; i<len; i++) {
       var char = code[i];
@@ -49,7 +65,61 @@ class TemplateParser {
         nextChar = code[i+1];
       }
 
-      // state machine to parse content of templates
+      // parse the markup to map tags to template code
+      if (HTMLSTATE == TEXT) {
+        // open HTML tag
+        if (char.match(/[a-zA-Z]/) != null && prevChar == '<') {
+          HTMLSTATE = TAG;
+          parentHtmlTag = curHtmlTag;
+          curHtmlTag = {
+            template: 1,
+            start: i-1,
+            parent: parentHtmlTag,
+            id: curTagNum
+          }
+          htmlTags.push(curHtmlTag);
+          if (parentHtmlTag == undefined) {
+            htmlRoot.push(curHtmlTag);
+          } else {
+            if (parentHtmlTag.children == undefined) {
+              parentHtmlTag.children = [];
+            }
+            parentHtmlTag.children.push(curHtmlTag);
+          }
+          curTagNum++;
+          curHtmlCode += prevChar + char;
+        // close HTML tag
+        } else if (char == '/' & prevChar == '<') {
+          HTMLSTATE = TAGCLOSE;
+        }
+      } else if (HTMLSTATE == ATTR) {
+        curHtmlCode += char;
+        if (char == attrChar) {
+          HTMLSTATE = TAG;
+          attrChar = '';
+        }
+
+      } else if (HTMLSTATE == TAG) {
+        curHtmlCode += char;
+        if (char == '"' || char == "'") {
+          HTMLSTATE = ATTR;
+          attrChar = char;
+        } else if (char == '>') {
+          HTMLSTATE = TEXT;
+          curHtmlTag.code = curHtmlCode;
+          curHtmlCode = '';
+          curPart += ' fa-tag-id="'+ curHtmlTag.id +'"';
+          console.log(curPart);
+        }
+      } else if (HTMLSTATE == TAGCLOSE) {
+        if (char == '>') {
+          curHtmlTag.end = i;
+          HTMLSTATE = TEXT;
+          curHtmlTag = curHtmlTag.parent;
+        }
+      }
+
+      // state machine to parse template language content
       if (STATE == NORM) {
         // template tag
         if (char == '{' && nextChar == '%') {
@@ -198,6 +268,11 @@ class TemplateParser {
       this.root = [];
       this.parse();
     }
+
+    this.elements = htmlTags;
+
+    console.log(htmlTags);
+    console.log(htmlRoot);
 
     return this.root;
   }

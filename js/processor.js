@@ -14,6 +14,11 @@ class Processor {
     if (this.blocksList.length > 0) {
       this.inherit = true;
     }
+    this.tags = parser.getElements();
+  }
+
+  getTag(num) {
+    return this.tags[num-1];
   }
 
   render(context) {

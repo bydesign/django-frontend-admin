@@ -21,6 +21,10 @@ class FrontAdmin {
     this.processor.parse();
   }
 
+  getTag(num) {
+    return this.processor.getTag(num);
+  }
+
   render(context) {
     var html = this.processor.render(context);
     //console.log(html);
