@@ -27,9 +27,19 @@ class FrontAdmin {
 
   render(context) {
     var html = this.processor.render(context);
-    //console.log(html);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
-    $("body > *").not("#frontEditor,#FE,#djDebug").remove()
+    $("body").contents().not("#frontEditor,#FE,#djDebug").remove();
+    var safeIds = [
+      'frontEditor',
+      'FE',
+      'djDebug'
+    ];
+
+    $('body').contents().each(function(index, child) {
+      if (child.id == undefined || safeIds.indexOf(child.id) == -1) {
+        child.parentNode.removeChild(child);
+      }
+    });
     $('body').prepend(html);
   }
 

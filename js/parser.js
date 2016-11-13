@@ -280,9 +280,6 @@ class TemplateParser {
 
     this.elements = htmlTags;
 
-    console.log(htmlTags);
-    console.log(htmlRoot);
-
     return this.root;
   }
 }

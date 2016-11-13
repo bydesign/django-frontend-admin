@@ -49,7 +49,7 @@
 var TEMPLATES = [
   {
     name: 'baseTemplate',
-    content: "<!doctype html><html><head><title>Replaced Django Frontend Admin</title></head><body><h1>Title goes here.</h1>{% block 'header' %}{% endblock %}<p></p>{% block 'footer' %}{% endblock %}</body></html>"
+    content: "<!doctype html><html><head><title>Replaced Django Frontend Admin</title></head><body><div id='doc'><h1>Title goes here.</h1>{% block 'header' %}{% endblock %}<p></p>{% block 'footer' %}{% endblock %}</div></body></html>"
   },
   {
     name: 'childTemplate',
@@ -101,7 +101,6 @@ $('#frontEditor').click(function() {
       console.log('waiting for render ...');
     } else {
       curTemplate.content = editor.getValue();
-      console.log(TEMPLATES);
       render();
     }
   });
@@ -110,7 +109,6 @@ $('#frontEditor').click(function() {
     var tagIdStr = $(event.target).attr('fa-tag-id');
     if (tagIdStr != undefined) {
       var tag = FA.getTag( Number(tagIdStr) );
-      console.log(tag);
       editor.setSelection(tag.start, tag.end);
     }
   })

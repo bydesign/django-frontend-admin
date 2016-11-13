@@ -4,7 +4,6 @@ class Processor {
     this.templateName = data.name;
     this.templateContent = data.content;
     this.inherit = false;
-    console.log('new parse manager constructed');
   }
 
   parse() {
