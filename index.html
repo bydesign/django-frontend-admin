@@ -109,9 +109,9 @@ $('#frontEditor').click(function() {
   $(document).click(function(event) {
     var tagIdStr = $(event.target).attr('fa-tag-id');
     if (tagIdStr != undefined) {
-      var tag = FA.getTag(tagId);
+      var tag = FA.getTag( Number(tagIdStr) );
       console.log(tag);
-      //editor.setSelection({line, ch}, {line, ch});
+      editor.setSelection(tag.start, tag.end);
     }
   })
 });

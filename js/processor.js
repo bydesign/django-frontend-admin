@@ -9,7 +9,7 @@ class Processor {
 
   parse() {
     var parser = new TemplateParser(this.templateContent, this.fa.tags);
-    this.tree = parser.parse();
+    this.tree = parser.parse(this.templateContent, this.templateName);
     this.blocksList = parser.getBlocks();
     if (this.blocksList.length > 0) {
       this.inherit = true;

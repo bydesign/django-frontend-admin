@@ -27,8 +27,8 @@ class TemplateParser {
     return this.elements;
   }
 
-  parse() {
-    if (this.code.includes('{% extends ')) {
+  parse(code, templateName) {
+    if (code.includes('{% extends ')) {
       this.extends = true;
     }
     var NORM = 0,
@@ -40,7 +40,7 @@ class TemplateParser {
         ATTR = 2,
         TAGCLOSE = 3,
         HTMLSTATE = TEXT;
-    var code = this.code,
+    var //code = this.code,
         newCode = '',
         prevChar = '',
         nextChar = '',
@@ -57,12 +57,18 @@ class TemplateParser {
         curHtmlTag,
         parentHtmlTag,
         curHtmlCode = '',
-        curTagNum = 1;
+        curTagNum = 1,
+        lineNum = 0,
+        chNum = 0;
 
     for (var i=0, len=code.length; i<len; i++) {
       var char = code[i];
       if (i+1 < len) {
         nextChar = code[i+1];
+      }
+      if (char == '\n') {
+        lineNum++;
+        chNum = 0;
       }
 
       // parse the markup to map tags to template code
@@ -72,8 +78,8 @@ class TemplateParser {
           HTMLSTATE = TAG;
           parentHtmlTag = curHtmlTag;
           curHtmlTag = {
-            template: 1,
-            start: i-1,
+            template: templateName,
+            start: { line:lineNum, ch:chNum-1 },
             parent: parentHtmlTag,
             id: curTagNum
           }
@@ -109,11 +115,10 @@ class TemplateParser {
           curHtmlTag.code = curHtmlCode;
           curHtmlCode = '';
           curPart += ' fa-tag-id="'+ curHtmlTag.id +'"';
-          console.log(curPart);
         }
       } else if (HTMLSTATE == TAGCLOSE) {
         if (char == '>') {
-          curHtmlTag.end = i;
+          curHtmlTag.end = { line:lineNum, ch:chNum+1 };
           HTMLSTATE = TEXT;
           curHtmlTag = curHtmlTag.parent;
         }
@@ -259,14 +264,18 @@ class TemplateParser {
         }
       }
       prevChar = char;
+
+      if (char != '\n') {
+        chNum++;
+      }
     }
 
     if (this.extends && extendsTemplate != undefined) {
       var template = this.getTemplate(extendsTemplate);
-      this.code = template.content;
+      //this.code = template.content;
       extendsTemplate = '';
       this.root = [];
-      this.parse();
+      this.parse(template.content, template.name);
     }
 
     this.elements = htmlTags;
