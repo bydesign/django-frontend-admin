@@ -67,7 +67,7 @@ var TEMPLATES = [
 <script src="js/processor.js"></script>
 <script src="js/default.js"></script>
 <script>
-$('body').append('<div id="frontEditor" class="FAbtn">FA</div>');
+$('body').append('<div id="frontAdmin" class="FAbtn" title="Open FrontAdmin">FA</div>');
 
 var context = {
   not: 'definitely (resolved)',
@@ -83,16 +83,40 @@ function render() {
 }
 
 var rendering = false;
-$('#frontEditor').click(function() {
+$('#frontAdmin').click(function() {
   $(this).hide();
   window.FA = new FrontAdmin();
   FA.registerTags(BUILTIN_TAGS);
   render();
+  var curTemplate = FA.template;
+  var navActiveClass = 'FAnavActive';
 
-  $('body').append('<div class="FA" id="FA"><div class="FAtitle">FrontAdmin <span class="FAutils"><i class="material-icons">save</i><select id="templates" class="FAtemplateSelect"><option>Select template</option></select><i class="material-icons" id="closeFA">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
+  $('body').append('<div class="FA" id="FA"><div class="FAtitle">FrontAdmin <span class="FAutils"><span class="FAtab FAactiveTab" id="FATemplateTab">Templates</span> <span class="FAtab" id="FAContentTab">Content</span> <i class="material-icons" id="closeFA" title="Close FrontAdmin">highlight_off</i></span></div><div class="FAlistPane" id="FAlistPane"></div><div class="FAcontentPane"><textarea id="myTextarea"></textarea></div></div>');
+  var navList = '<ul class="FAnavList">';
+  TEMPLATES.forEach(function(template, index) {
+    navList += '<li fe-template-id="'+index+'"';
+    if (template == curTemplate) {
+      navList += ' class="'+ navActiveClass +'"';
+    }
+    navList += '>'+ template.name +'</li>';
+  });
+  navList += '</ul>';
+  $('#FAlistPane').html(navList);
+  $('.FAnavList > li').click(function() {
+    var templateId = Number( $(this).attr('fe-template-id') );
+    selectTemplate(templateId);
+  });
+
+  function selectTemplate(templateId) {
+    curTemplate = TEMPLATES[templateId];
+    editor.setValue(curTemplate.content);
+    $('.'+navActiveClass).removeClass(navActiveClass);
+    $('.FAnavList > li:eq('+templateId+')').addClass(navActiveClass);
+  }
+
   $('#closeFA').click(function() {
     $('#FA').remove();
-    $('#frontEditor').show();
+    $('#frontAdmin').show();
     $(document).off('click');
     activateNode();
   })
@@ -101,7 +125,6 @@ $('#frontEditor').click(function() {
     theme: 'duotone-light',
     mode: 'django'
   });
-  var curTemplate = FA.template;
   editor.setValue(curTemplate.content);
   editor.on('changes', function(cm, change) {
     if (rendering) {

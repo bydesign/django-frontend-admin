@@ -11,7 +11,8 @@ class FrontAdmin {
   process(templates) {
     var that = this;
 
-    templates.forEach(function(tempData) {
+    templates.forEach(function(tempData, index) {
+      tempData.id = index;
       that.templates[tempData.name] = tempData;
       if (tempData.start) {
         that.processor = new Processor(tempData, that);
@@ -32,9 +33,9 @@ class FrontAdmin {
   render(context) {
     var html = this.processor.render(context);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
-    $("body > *").not("#frontEditor,#FA,#djDebug").remove();
+    $("body > *").not("#frontAdmin,#FA,#djDebug").remove();
     var safeIds = [
-      'frontEditor',
+      'frontAdmin',
       'FA',
       'djDebug'
     ];
