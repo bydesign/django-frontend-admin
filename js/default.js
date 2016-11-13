@@ -32,10 +32,10 @@ class FrontAdmin {
   render(context) {
     var html = this.processor.render(context);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
-    $("body").contents().not("#frontEditor,#FE,#djDebug").remove();
+    $("body > *").not("#frontEditor,#FA,#djDebug").remove();
     var safeIds = [
       'frontEditor',
-      'FE',
+      'FA',
       'djDebug'
     ];
 

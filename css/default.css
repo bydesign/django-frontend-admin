@@ -1,7 +1,7 @@
 body {
   font-family: 'Ubuntu', sans-serif;
 }
-.FEbtn {
+.FAbtn {
   position:fixed;
   bottom:0;
   right:0;
@@ -11,13 +11,13 @@ body {
   display:inline-block;
   cursor:default;
 }
-.FEutils {
+.FAutils {
   cursor:default;
 }
-.FEbtn:hover {
+.FAbtn:hover {
   background-color:rgba(0,0,0,.8);
 }
-.FE {
+.FA {
   position:fixed;
   bottom:0;
   left:0;
@@ -25,19 +25,19 @@ body {
   height:45%;
   opacity:.8;
 }
-.FEtitle {
+.FAtitle {
   background-color:rgba(0,0,0,.8);
   font-size:1em;
   padding: .5em .8em;
   color:#fff;
   position:relative;
 }
-.FEutils {
+.FAutils {
   position:absolute;
   top:.3em;
   right:.8em;
 }
-.FEtemplateSelect {
+.FAtemplateSelect {
   position:relative;
   top: -.7em;
   margin: .5em

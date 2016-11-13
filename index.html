@@ -67,7 +67,7 @@ var TEMPLATES = [
 <script src="js/processor.js"></script>
 <script src="js/default.js"></script>
 <script>
-$('body').append('<div id="frontEditor" class="FEbtn">FE</div>');
+$('body').append('<div id="frontEditor" class="FAbtn">FA</div>');
 
 var context = {
   not: 'definitely (resolved)',
@@ -89,10 +89,12 @@ $('#frontEditor').click(function() {
   FA.registerTags(BUILTIN_TAGS);
   render();
 
-  $('body').append('<div class="FE" id="FE"><div class="FEtitle">FrontEditor <span class="FEutils"><i class="material-icons">save</i><select id="templates" class="FEtemplateSelect"><option>Select template</option></select><i class="material-icons" id="closeFA">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
+  $('body').append('<div class="FA" id="FA"><div class="FAtitle">FrontAdmin <span class="FAutils"><i class="material-icons">save</i><select id="templates" class="FAtemplateSelect"><option>Select template</option></select><i class="material-icons" id="closeFA">highlight_off</i></span></div><textarea id="myTextarea"></textarea></div>');
   $('#closeFA').click(function() {
-    $('#FE').remove();
+    $('#FA').remove();
     $('#frontEditor').show();
+    $(document).off('click');
+    activateNode();
   })
   var editor = CodeMirror.fromTextArea(myTextarea, {
     lineNumbers: true,
@@ -107,16 +109,17 @@ $('#frontEditor').click(function() {
     } else {
       curTemplate.content = editor.getValue();
       render();
+      activateNodeFromCursor(cm.getCursor());
     }
   });
 
   var activeClass = 'FAactive';
   editor.on('cursorActivity', function(cm) {
-    var nodeId = FA.getNodeId(cm.getCursor());
-    activateNode($('[fa-tag-id='+nodeId+']'));
+    activateNodeFromCursor(cm.getCursor());
   });
 
   $(document).click(function(event) {
+    event.preventDefault();
     var $target = $(event.target);
     var tagIdStr = $target.attr('fa-tag-id');
     if (tagIdStr != undefined) {
@@ -124,11 +127,19 @@ $('#frontEditor').click(function() {
       editor.setSelection(tag.start, tag.end);
       activateNode($target);
     }
-  })
+  });
+
+  function activateNodeFromCursor(cursor) {
+    var nodeId = FA.getNodeId(cursor);
+    var node = $('[fa-tag-id='+nodeId+']');
+    activateNode(node);
+  }
 
   function activateNode(node) {
     $('.'+activeClass).removeClass(activeClass);
-    $(node).addClass(activeClass);
+    if (node != undefined) {
+      $(node).addClass(activeClass);
+    }
   }
 });
 
