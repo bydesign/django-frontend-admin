@@ -3,12 +3,13 @@ class Processor {
     this.fa = fa;
     this.templateName = data.name;
     this.templateContent = data.content;
+    this.templateId = data.id;
     this.inherit = false;
   }
 
   parse() {
     var parser = new TemplateParser(this.templateContent, this.fa.tags);
-    this.tree = parser.parse(this.templateContent, this.templateName);
+    this.tree = parser.parse(this.templateContent, this.templateId);
     this.blocksList = parser.getBlocks();
     if (this.blocksList.length > 0) {
       this.inherit = true;
@@ -16,22 +17,23 @@ class Processor {
     this.tags = parser.getElements();
   }
 
-  getTag(num) {
-    return this.tags[num-1];
+  getTag(tagId) {
+    return this.tags[tagId];
   }
 
   getNodeId(cursor) {
     var id;
-    this.tags.forEach(function(tag) {
+    for (var tagId in this.tags) {
+      var tag = this.tags[tagId];
       if (
         tag.start.line <= cursor.line &&
         tag.start.ch <= cursor.ch &&
         tag.end.line >= cursor.line &&
         tag.end.ch >= cursor.ch
       ) {
-        id = tag.id
+        id = tagId;
       }
-    })
+    }
     return id;
   }
 

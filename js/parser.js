@@ -4,7 +4,7 @@ class TemplateParser {
     this.blocks = [];
     this.tags = tags;
     this.root = [];
-    this.elements = [];
+    this.elements = {};
     this.extends = false;
   }
 
@@ -27,7 +27,7 @@ class TemplateParser {
     return this.elements;
   }
 
-  parse(code, templateName) {
+  parse(code, templateNum) {
     if (code.includes('{% extends ')) {
       this.extends = true;
     }
@@ -51,7 +51,6 @@ class TemplateParser {
         curCloseTag = '',
         curParent,
         curTag,
-        htmlTags = [],
         htmlRoot = [],
         attrChar = '',
         curHtmlTag,
@@ -78,12 +77,12 @@ class TemplateParser {
           HTMLSTATE = TAG;
           parentHtmlTag = curHtmlTag;
           curHtmlTag = {
-            template: templateName,
+            template: templateNum,
             start: { line:lineNum, ch:chNum-1 },
             parent: parentHtmlTag,
             id: curTagNum
           }
-          htmlTags.push(curHtmlTag);
+          this.elements[templateNum + '-' + curTagNum] = curHtmlTag;
           if (parentHtmlTag == undefined) {
             htmlRoot.push(curHtmlTag);
           } else {
@@ -114,7 +113,7 @@ class TemplateParser {
           HTMLSTATE = TEXT;
           curHtmlTag.code = curHtmlCode;
           curHtmlCode = '';
-          curPart += ' fa-tag-id="'+ curHtmlTag.id +'"';
+          curPart += ' fa-tag-id="'+ curHtmlTag.template + '-' + curHtmlTag.id +'"';
         }
       } else if (HTMLSTATE == TAGCLOSE) {
         if (char == '>') {
@@ -275,10 +274,11 @@ class TemplateParser {
       //this.code = template.content;
       extendsTemplate = '';
       this.root = [];
-      this.parse(template.content, template.name);
+      this.parse(template.content, template.id);
     }
 
-    this.elements = htmlTags;
+    //this.elements = htmlTags;
+    //console.log(htmlTags);
 
     return this.root;
   }

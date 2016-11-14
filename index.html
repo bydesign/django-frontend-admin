@@ -94,7 +94,7 @@ $('#frontAdmin').click(function() {
   $('body').append('<div class="FA" id="FA"><div class="FAtitle">FrontAdmin <span class="FAutils"><span class="FAtab FAactiveTab" id="FATemplateTab">Templates</span> <span class="FAtab" id="FAContentTab">Content</span> <i class="material-icons" id="closeFA" title="Close FrontAdmin">highlight_off</i></span></div><div class="FAlistPane" id="FAlistPane"></div><div class="FAcontentPane"><textarea id="myTextarea"></textarea></div></div>');
   var navList = '<ul class="FAnavList">';
   TEMPLATES.forEach(function(template, index) {
-    navList += '<li fe-template-id="'+index+'"';
+    navList += '<li fa-template-id="'+index+'"';
     if (template == curTemplate) {
       navList += ' class="'+ navActiveClass +'"';
     }
@@ -103,7 +103,7 @@ $('#frontAdmin').click(function() {
   navList += '</ul>';
   $('#FAlistPane').html(navList);
   $('.FAnavList > li').click(function() {
-    var templateId = Number( $(this).attr('fe-template-id') );
+    var templateId = Number( $(this).attr('fa-template-id') );
     selectTemplate(templateId);
   });
 
@@ -146,7 +146,8 @@ $('#frontAdmin').click(function() {
     var $target = $(event.target);
     var tagIdStr = $target.attr('fa-tag-id');
     if (tagIdStr != undefined) {
-      var tag = FA.getTag( Number(tagIdStr) );
+      var tag = FA.getTag( tagIdStr );
+      selectTemplate(tag.template);
       editor.setSelection(tag.start, tag.end);
       activateNode($target);
     }
