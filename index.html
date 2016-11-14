@@ -63,6 +63,7 @@ var TEMPLATES = [
 ]
 </script>
 <script src="js/builtin_tags.js"></script>
+<script src="js/variable.js"></script>
 <script src="js/parser.js"></script>
 <script src="js/processor.js"></script>
 <script src="js/default.js"></script>
@@ -108,10 +109,12 @@ $('#frontAdmin').click(function() {
   });
 
   function selectTemplate(templateId) {
-    curTemplate = TEMPLATES[templateId];
-    editor.setValue(curTemplate.content);
-    $('.'+navActiveClass).removeClass(navActiveClass);
-    $('.FAnavList > li:eq('+templateId+')').addClass(navActiveClass);
+    if (templateId != curTemplate.id) {
+      curTemplate = TEMPLATES[templateId];
+      editor.setValue(curTemplate.content);
+      $('.'+navActiveClass).removeClass(navActiveClass);
+      $('.FAnavList > li:eq('+templateId+')').addClass(navActiveClass);
+    }
   }
 
   $('#closeFA').click(function() {
@@ -127,6 +130,7 @@ $('#frontAdmin').click(function() {
   });
   editor.setValue(curTemplate.content);
   editor.on('changes', function(cm, change) {
+    console.log('document changed');
     if (rendering) {
       console.log('waiting for render ...');
     } else {
@@ -149,7 +153,6 @@ $('#frontAdmin').click(function() {
       var tag = FA.getTag( tagIdStr );
       selectTemplate(tag.template);
       editor.setSelection(tag.start, tag.end);
-      activateNode($target);
     }
   });
 
@@ -159,10 +162,10 @@ $('#frontAdmin').click(function() {
     activateNode(node);
   }
 
-  function activateNode(node) {
+  function activateNode($node) {
     $('.'+activeClass).removeClass(activeClass);
-    if (node != undefined) {
-      $(node).addClass(activeClass);
+    if ($node != undefined) {
+      $node.addClass(activeClass);
     }
   }
 });
