@@ -30,8 +30,8 @@ class FrontAdmin {
     return this.processor.getNodeId(cursor);
   }
 
-  render(context) {
-    var html = this.processor.render(context);
+  render(mode, context) {
+    var html = this.processor.render(mode, context);
     html = html.replace(/^.+\<body\>/,'').replace('</body>','').replace('</html>','');
     $("body > *").not("#frontAdmin,#FA,#djDebug").remove();
     var safeIds = [

@@ -8,7 +8,11 @@ class Variable extends Node {
     this.value = this.resolveValue(this.value, context);
   }
 
-  render() {
-    return this.value;
+  render(mode) {
+    if (mode == 1) {
+      return '<span class="FAeditable">' + this.value + '</span>';
+    } else {
+      return this.value;
+    }
   }
 }

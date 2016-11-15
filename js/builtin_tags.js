@@ -5,7 +5,7 @@ class Node {
     this.end = end;
   }
 
-  render(context) {
+  render(mode, context) {
     return '';
   }
 
@@ -66,10 +66,10 @@ class TagClosing extends Tag {
     this.children.push(child);
   }
 
-  render(context) {
+  render(mode, context) {
     var str = '';
     this.children.forEach(function(child) {
-      str += child.render();
+      str += child.render(mode);
     });
     return str;
   }

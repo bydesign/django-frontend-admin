@@ -37,7 +37,7 @@ class Processor {
     return id;
   }
 
-  render(context) {
+  render(mode, context) {
     var str = '';
     var that = this;
     var blocks = {};
@@ -59,7 +59,7 @@ class Processor {
       if (that.inherit && node.name == 'block') {
         node = blocks[node.blockName][0];
       }
-      str += node.render();
+      str += node.render(mode);
     });
 
     return str;

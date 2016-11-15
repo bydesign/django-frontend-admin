@@ -84,3 +84,6 @@ body {
 .FAnavActive {
   background-color:rgba(0,0,0,.1);
 }
+.FAeditable {
+  background-color:rgba(255,255,200,1);
+}
