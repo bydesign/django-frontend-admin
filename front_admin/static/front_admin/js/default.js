@@ -12,11 +12,12 @@ class FrontAdmin {
     var that = this;
 
     templates.forEach(function(tempData, index) {
-      tempData.id = index;
-      that.templates[tempData.name] = tempData;
-      if (tempData.start) {
-        that.processor = new Processor(tempData, that);
-        that.template = tempData;
+      var template = tempData.template;
+      template.id = index;
+      that.templates[template.name] = template;
+      if (index == 0) {
+        that.processor = new Processor(template, that);
+        that.template = template;
       }
     });
     this.processor.parse();

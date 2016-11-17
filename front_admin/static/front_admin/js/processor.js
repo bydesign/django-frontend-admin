@@ -2,7 +2,7 @@ class Processor {
   constructor(data, fa) {
     this.fa = fa;
     this.templateName = data.name;
-    this.templateContent = data.content;
+    this.templateContent = data.source;
     this.templateId = data.id;
     this.inherit = false;
   }

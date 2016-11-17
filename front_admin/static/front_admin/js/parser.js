@@ -117,9 +117,11 @@ class TemplateParser {
         }
       } else if (HTMLSTATE == TAGCLOSE) {
         if (char == '>') {
-          curHtmlTag.end = { line:lineNum, ch:chNum+1 };
-          HTMLSTATE = TEXT;
-          curHtmlTag = curHtmlTag.parent;
+          if (curHtmlTag != undefined) {
+            curHtmlTag.end = { line:lineNum, ch:chNum+1 };
+            HTMLSTATE = TEXT;
+            curHtmlTag = curHtmlTag.parent;
+          }
         }
       }
 

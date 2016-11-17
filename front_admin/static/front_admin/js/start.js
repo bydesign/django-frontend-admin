@@ -9,16 +9,31 @@ var MODE_TEMPLATES = 0,
     MODE_CONTENT = 1,
     MODE = MODE_TEMPLATES;
 
+var data = JSON.parse($('#fa-data')[0].text);
+
 function render() {
   rendering = true;
-  FA.process(TEMPLATES);
+  FA.process(data);
   FA.render(MODE, context);
   rendering = false;
 }
 
+$(document).ready(function() {
+  var stylesheets = [
+    '/static/front_admin/js/codemirror/lib/codemirror.css',
+    '/static/front_admin/js/codemirror/theme/duotone-light.css',
+    'https://fonts.googleapis.com/css?family=Ubuntu:300,400,500',
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    '/static/front_admin/css/default.css',
+  ];
+  sheetStr = '';
+  stylesheets.forEach(function(sheet) {
+    sheetStr += '<link href="'+ sheet +'" rel="stylesheet" />';
+  });
+  $('head').append(sheetStr);
+});
 var rendering = false;
 $('#frontAdmin').click(function() {
-  var data = JSON.parse($('#fa-data')[0].text);
   console.log(data);
   $(this).hide();
   window.FA = new FrontAdmin();
@@ -33,7 +48,8 @@ $('#frontAdmin').click(function() {
   function templateMode() {
     MODE = MODE_TEMPLATES;
     var navList = '<ul class="FAnavList">';
-    TEMPLATES.forEach(function(template, index) {
+    data.forEach(function(item, index) {
+      var template = item.template;
       navList += '<li fa-template-id="'+index+'"';
       if (template == curTemplate) {
         navList += ' class="'+ navActiveClass +'"';
@@ -55,13 +71,13 @@ $('#frontAdmin').click(function() {
       theme: 'duotone-light',
       mode: 'django'
     });
-    editor.setValue(curTemplate.content);
+    editor.setValue(curTemplate.source);
     editor.on('changes', function(cm, change) {
       console.log('document changed');
       if (rendering) {
         console.log('waiting for render ...');
       } else {
-        curTemplate.content = editor.getValue();
+        curTemplate.source = editor.getValue();
         render();
         activateNodeFromCursor(cm.getCursor());
       }
@@ -72,8 +88,9 @@ $('#frontAdmin').click(function() {
 
     function selectTemplate(templateId) {
       if (templateId != curTemplate.id) {
-        curTemplate = TEMPLATES[templateId];
-        editor.setValue(curTemplate.content);
+        curTemplate = data[templateId].template;
+        console.log(curTemplate);
+        editor.setValue(curTemplate.source);
         $('.'+navActiveClass).removeClass(navActiveClass);
         $('.FAnavList > li:eq('+templateId+')').addClass(navActiveClass);
       }

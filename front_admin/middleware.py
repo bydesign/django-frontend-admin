@@ -109,12 +109,12 @@ class FrontAdminMiddleware(MiddlewareMixin):
         pattern = re.escape(insert_before)
         bits = re.split(pattern, content, flags=re.IGNORECASE)
         if len(bits) > 1:
-            fascript = '<link href="/static/front_admin/js/codemirror/lib/codemirror.css" rel="stylesheet" />\n'
-            fascript += '<link href="/static/front_admin/js/codemirror/theme/duotone-light.css" rel="stylesheet" />\n'
-            fascript += '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500" rel="stylesheet">\n'
-            fascript += '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">\n'
-            fascript += '<link href="/static/front_admin/css/default.css" rel="stylesheet">\n'
-            fascript += '<script type="application/json" id="fa-data">' + json.dumps(self.templates) + '</script>\n'
+            #fascript = '<link href="/static/front_admin/js/codemirror/lib/codemirror.css" rel="stylesheet" />\n'
+            #fascript += '<link href="/static/front_admin/js/codemirror/theme/duotone-light.css" rel="stylesheet" />\n'
+            #fascript += '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500" rel="stylesheet">\n'
+            #fascript += '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">\n'
+            #fascript += '<link href="/static/front_admin/css/default.css" rel="stylesheet">\n'
+            fascript = '<script type="application/json" id="fa-data">' + json.dumps(self.templates) + '</script>\n'
             fascript += '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>\n'
             fascript += '<script src="/static/front_admin/js/codemirror/codemirror.min.js"></script>\n'
             fascript += '<script src="/static/front_admin/js/codemirror/addon/mode/overlay.js"></script>\n'

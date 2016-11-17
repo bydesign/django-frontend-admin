@@ -27,10 +27,11 @@ class Node {
         varsFinal.push(variable);
       });
       this.varsFinal = varsFinal;
-
-      this.children.forEach(function(child) {
-        child.resolveVars(context);
-      });
+      if (this.children != undefined) {
+        this.children.forEach(function(child) {
+          child.resolveVars(context);
+        });
+      }
     }
   }
 }
@@ -78,6 +79,12 @@ class TagClosing extends Tag {
 class ExtendsTag extends Tag {
   constructor(parent, start, end, vars) {
     super('extends', parent, start, end, vars);
+  }
+}
+
+class UrlTag extends Tag {
+  constructor(parent, start, end, vars) {
+    super('url', parent, start, end, vars);
   }
 }
 
@@ -130,7 +137,24 @@ var BUILTIN_TAGS = [
     class: IfTag
   },
   {
+    name: 'else',
+    class: IfTag
+  },
+  {
+    name: 'endif',
+    class: IfTag
+  },
+  {
     name: 'for',
     class: ForTag
+  },
+  // hacky way to get around this for now
+  {
+    name: 'endfor',
+    class: ForTag
+  },
+  {
+    name: 'url',
+    class: UrlTag
   },
 ];
