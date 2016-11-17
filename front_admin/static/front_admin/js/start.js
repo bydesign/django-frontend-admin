@@ -18,6 +18,8 @@ function render() {
 
 var rendering = false;
 $('#frontAdmin').click(function() {
+  var data = JSON.parse($('#fa-data')[0].text);
+  console.log(data);
   $(this).hide();
   window.FA = new FrontAdmin();
   FA.registerTags(BUILTIN_TAGS);
