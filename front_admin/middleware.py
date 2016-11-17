@@ -60,10 +60,10 @@ class FrontAdminMiddleware(MiddlewareMixin):
         #print template.name
         #print template.source
         #print context
-        kwargs['template'] = {
-            'name': template.name,
-            'source': template.source
-        }
+        #kwargs['template'] = {
+        #    'name': template.name,
+        #    'source': template.source
+        #}
 
         # Skip templates that we are generating through the debug toolbar.
         if (isinstance(template.name, six.string_types) and
@@ -115,14 +115,16 @@ class FrontAdminMiddleware(MiddlewareMixin):
             except UnicodeEncodeError:
                 pass
 
-        print json.dumps(context_list)
-        #for item in context_list:
-        #    print item
-
-        kwargs['context'] = [force_text(item) for item in context_list]
+        #kwargs['context'] = context_list
         #context = [force_text(item) for item in context_list]
         #kwargs['context_processors'] = getattr(context, 'context_processors', None)
-        self.templates.append(kwargs)
+        self.templates.append({
+            'context': context_list,
+            'template': {
+                'name': template.name,
+                'source': template.source
+            }
+        })
 
     #@cached_property
     #def show_frontadmin(self):
@@ -169,7 +171,7 @@ class FrontAdminMiddleware(MiddlewareMixin):
 
     def generate_stats(self, request, response):
         template_context = []
-        #print self.templates
+        print self.templates
         for template_data in self.templates:
             info = {}
             # Clean up some info about templates
@@ -205,7 +207,7 @@ class FrontAdminMiddleware(MiddlewareMixin):
             #template_dirs = []
 
         self.record_stats({
-            'templates': template_context,
+            #'templates': ,
             #'template_dirs': [normpath(x) for x in template_dirs],
             'context_processors': context_processors,
         })
@@ -263,9 +265,25 @@ class FrontAdminMiddleware(MiddlewareMixin):
             #for panel in reversed(toolbar.enabled_panels):
             #    panel.generate_stats(request, response)
 
-            self.generate_stats(request, response)
+            #self.generate_stats(request, response)
+            fascript = '<link href="/static/front_admin/js/codemirror/lib/codemirror.css" rel="stylesheet" />\n'
+            fascript += '<link href="/static/front_admin/js/codemirror/theme/duotone-light.css" rel="stylesheet" />\n'
+            fascript += '<link href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,500" rel="stylesheet">\n'
+            fascript += '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">\n'
+            fascript += '<link href="/static/front_admin/css/default.css" rel="stylesheet">\n'
+            fascript += '<script type="application/json" id="fa-data">' + json.dumps(self.templates) + '</script>\n'
+            fascript += '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/codemirror/codemirror.min.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/codemirror/addon/mode/overlay.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/codemirror/mode/django/django.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/builtin_tags.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/variable.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/parser.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/processor.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/default.js"></script>\n'
+            fascript += '<script src="/static/front_admin/js/start.js"></script>\n'
 
-            bits[-2] += self.render_admin()
+            bits[-2] += fascript
             response.content = insert_before.join(bits)
             if response.get('Content-Length', None):
                 response['Content-Length'] = len(response.content)
@@ -276,5 +294,5 @@ class FrontAdminMiddleware(MiddlewareMixin):
         #for stat in self.stats:
         #    print stat
         #print self.stats
-        response = json.dumps(self.stats)
+        response = json.dumps(self.templates)
         return response
